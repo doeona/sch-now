@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SCH NOW | 순천향대학교 생활정보</title>
+  <meta name="description" content="순천향대학교 학생들을 위한 생활정보 포털 SCH NOW">
+  <meta name="theme-color" content="#00a86b">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav-wrap">
+      <a class="brand" href="#">SCH <span>NOW</span></a>
+      <button class="menu-toggle" id="menuToggle" aria-label="메뉴 열기" aria-controls="mobileMenu" aria-expanded="false">☰</button>
+      <nav id="mobileMenu">
+        <a href="#subway">지하철</a>
+        <a class="active" href="#nearby">주변정보</a>
+        <a href="#campus">캠퍼스</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container hero-grid">
+        <div>
+          <p class="eyebrow">SOONCHUNHYANG UNIVERSITY</p>
+          <h1>학교생활에 필요한 정보를<br><strong>한눈에.</strong></h1>
+          <p class="hero-copy">신창역부터 학교 주변 맛집, 카페, 편의시설까지<br>학생 생활에 필요한 정보를 한 곳에서 확인하세요.</p>
+          <div class="hero-actions">
+            <a class="btn primary" href="#subway">신창역 확인</a>
+            <a class="btn secondary" href="#nearby">주변정보 보기</a>
+          </div>
+        </div>
+        <div class="hero-live">
+          <span class="live-dot"></span>
+          <small>LIVE INFORMATION</small>
+          <div class="hero-station">신창(순천향대)</div>
+          <div class="hero-time" id="clock">--:--:--</div>
+          <div class="hero-meta">1호선 · 순천향대학교 생활권</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="dashboard-section">
+      <div class="container">
+        <div class="dashboard-head">
+          <div>
+            <p class="eyebrow">SCH NOW DASHBOARD</p>
+            <h2>오늘 학교생활에 필요한 정보</h2>
+            <p>자주 찾는 정보와 현재 연결 상태를 한눈에 확인하세요.</p>
+          </div>
+          <span class="dashboard-status"><i></i> 서비스 정상</span>
+        </div>
+        <div class="dashboard-grid">
+          <a class="dash-card dash-green" href="#subway">
+            <div class="dash-icon">🚇</div>
+            <div><span>신창역</span><strong id="dashSubwayStatus">시간표 준비됨</strong><small id="dashSubwayNotice">현재는 테스트 시간표를 사용합니다.</small></div>
+            <b>→</b>
+          </a>
+          <a class="dash-card" href="#nearby">
+            <div class="dash-icon">📍</div>
+            <div><span>학교 주변</span><strong>실제 장소 검색</strong><small>식당 · 카페 · 편의점 · 약국 · 은행</small></div>
+            <b>→</b>
+          </a>
+          <a class="dash-card" href="#campus">
+            <div class="dash-icon">🏫</div>
+            <div><span>캠퍼스</span><strong id="dashBuildingCount">건물 불러오는 중</strong><small>건물 위치와 주요 용도 확인</small></div>
+            <b>→</b>
+          </a>
+          <div class="dash-card dash-static">
+            <div class="dash-icon">🕒</div>
+            <div><span>현재 시각</span><strong id="dashClock">--:--</strong><small>대한민국 표준시 기준</small></div>
+          </div>
+      </div>
+    </section>
+
+    <section id="subway" class="section">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">SUBWAY</p>
+            <h2>신창역 실시간 정보</h2>
+          </div>
+          <button class="outline-btn" id="refreshSubway" type="button">↻ 새로고침</button>
+        </div>
+        <div class="subway-panel">
+          <div class="station-title">
+            <div class="line-badge">1</div>
+            <div><strong>신창(순천향대)</strong><span>1호선</span></div>
+          </div>
+          <div class="train-list" id="trainList"></div>
+          <p class="notice" id="subwayNotice"></p>
+        </div>
+      </div>
+    </section>
+
+    <section id="nearby" class="section nearby-section">
+      <div class="container">
+        <div class="section-head nearby-head">
+          <div>
+            <p class="eyebrow">NEARBY</p>
+            <h2>학교 주변 정보</h2>
+            <p class="section-desc">순천향대학교를 기준으로 가까운 생활 편의시설을 확인하세요.</p>
+          </div>
+        </div>
+
+        <div class="nearby-layout">
+          <aside class="category-panel">
+            <div class="category-title">카테고리</div>
+            <button class="category-btn active" data-category="전체">전체</button>
+            <button class="category-btn" data-category="식당">🍚 식당</button>
+            <button class="category-btn" data-category="카페">☕ 카페</button>
+            <button class="category-btn" data-category="편의점">🏪 편의점</button>
+            <button class="category-btn" data-category="약국">💊 약국</button>
+            <button class="category-btn" data-category="은행">🏦 은행</button>
+          </aside>
+
+          <div class="nearby-content">
+            <div class="map-card">
+              <div class="map-grid"></div>
+              <div class="map-center">
+                <div class="map-pin">SCH</div>
+                <strong>순천향대학교</strong>
+                <span>현재 기준 위치</span>
+              </div>
+              <div class="map-label label-a">신창역</div>
+              <div class="map-label label-b">대학가</div>
+              <div class="map-label label-c">정문</div>
+            </div>
+
+            <div class="place-toolbar">
+              <strong id="resultTitle">전체 주변정보</strong>
+              <span id="resultCount">-</span>
+            </div>
+            <div class="place-grid" id="placeGrid"></div>
+          </div>
+      </div>
+    </section>
+
+    <section id="campus" class="section campus-section">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">CAMPUS</p>
+            <h2>캠퍼스 정보</h2>
+            <p class="section-desc">건물과 학생 편의시설을 빠르게 찾아보세요.</p>
+          </div>
+        </div>
+
+        <div class="campus-tabs">
+          <button class="campus-tab active" data-campus-tab="buildings">🏫 건물·시설</button>
+          <button class="campus-tab" data-campus-tab="cafeteria">🍚 학생식당</button>
+          <button class="campus-tab" data-campus-tab="map">🗺️ 캠퍼스 지도</button>
+        </div>
+
+        <div id="campusBuildingsPanel" class="campus-panel">
+          <div class="campus-filter-row">
+            <div>
+              <strong>교내 건물</strong>
+              <span class="campus-count" id="buildingCount">불러오는 중</span>
+            </div>
+            <div class="building-filters">
+              <button class="building-filter active" data-type="전체">전체</button>
+              <button class="building-filter" data-type="학습">학습</button>
+              <button class="building-filter" data-type="학생편의">학생편의</button>
+              <button class="building-filter" data-type="강의시설">강의시설</button>
+              <button class="building-filter" data-type="체육시설">체육시설</button>
+            </div>
+          </div>
+          <p class="campus-source">학교 공식 캠퍼스 맵의 건물 목록을 기준으로 구성하고, 지도 위치는 카카오 장소 데이터로 표시합니다.</p>
+          <div class="building-grid" id="buildingGrid"></div>
+        </div>
+
+        <div id="cafeteriaPanel" class="campus-panel hidden">
+          <div class="cafeteria-hero">
+            <div class="cafeteria-icon">🍚</div>
+            <div>
+              <p class="eyebrow">CAMPUS FACILITIES</p>
+              <h3>교내 주요 시설</h3>
+              <p>학생들이 자주 이용하는 교내 시설을 한눈에 확인하세요.</p>
+            </div>
+          </div>
+          <div class="cafeteria-grid" id="facilityGrid"></div>
+          <p class="campus-notice">학생식당 메뉴·운영시간은 공식 식당 데이터 연동이 확인되면 별도 API로 연결할 수 있습니다.</p>
+        </div>
+
+        <div id="campusMapPanel" class="campus-panel hidden">
+          <div class="campus-map-toolbar">
+            <div>
+              <strong>실제 캠퍼스 위치 지도</strong>
+              <span>마커를 누르면 건물 상세정보가 아래에 표시됩니다.</span>
+            </div>
+            <button class="outline-btn" id="centerCampusMap" type="button">◎ 학교 중심</button>
+          </div>
+          <div class="campus-map-layout">
+            <div id="campusMap" class="campus-map"></div>
+            <aside id="campusMapInfo" class="campus-map-info">
+              <div class="map-info-empty">
+                <span>🏫</span>
+                <strong>건물을 선택하세요</strong>
+                <p>지도에서 건물 마커를 클릭하면 용도와 위치 정보를 확인할 수 있습니다.</p>
+              </div>
+            </aside>
+          </div>
+          <p class="campus-notice">지도는 OpenStreetMap 기반이며, 건물 위치는 카카오 장소 검색 결과를 사용합니다.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer><div class="container">SCH NOW · Soonchunhyang University Student Portal</div></footer>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="/js/main.js"></script>
+</body>
+</html>
