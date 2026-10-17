@@ -27,25 +27,32 @@ document.querySelectorAll("#mobileMenu a").forEach(a => {
 async function loadSubway() {
   const list = document.getElementById("trainList");
   const notice = document.getElementById("subwayNotice");
+  const refreshButton = document.getElementById("refreshSubway");
+  if (refreshButton) refreshButton.disabled = true;
   try {
     const res = await fetch("/api/subway");
     const data = await res.json();
-    list.innerHTML = data.trains.map(t => `
-      <article class="train-card">
-        <div class="dir">${t.direction}</div>
-        <h3>${t.destination}</h3>
-        <p>${t.minutes}분 후 도착 예정</p>
-      </article>
-    `).join("");
-    notice.textContent = data.notice;
+    if (!res.ok) throw new Error(data.error || data.notice || "열차 정보를 불러오지 못했습니다.");
+    if (!data.trains || data.trains.length === 0) {
+      list.innerHTML = `<article class="train-card"><div class="dir">안내</div><h3>현재 이후 신창행 열차가 없습니다.</h3><p>시간표 또는 역 코드 설정을 확인해주세요.</p></article>`;
+    } else {
+      list.innerHTML = data.trains.map((t, index) => `
+        <article class="train-card">
+          <div class="dir">${index === 0 ? "다음 열차" : "신창행"}</div>
+          <h3>${t.departureTime || "--:--"} 출발</h3>
+          <p>${t.minutes === 0 ? "곧 출발" : `${t.minutes}분 후 출발 예정`}</p>
+          <small>열차번호 ${t.trainNo || "-"}</small>
+        </article>`).join("");
+    }
+    notice.textContent = data.notice || "KRIC 시간표 기준 정보입니다.";
     const dashStatus = document.getElementById("dashSubwayStatus");
     const dashNotice = document.getElementById("dashSubwayNotice");
-    if (dashStatus) dashStatus.textContent = data.source === "demo" ? "시간표 준비됨" : "실시간 정보 연결됨";
-    if (dashNotice) dashNotice.textContent = data.notice || "신창역 정보를 확인하세요.";
-  } catch {
-    list.innerHTML = `<article class="train-card"><div class="dir">안내</div><h3>정보를 불러오지 못했습니다.</h3><p>잠시 후 다시 시도해주세요.</p></article>`;
-    notice.textContent = "신창역 정보를 불러오지 못했습니다.";
-  }
+    if (dashStatus) dashStatus.textContent = data.source === "kric-timetable" ? "KRIC 시간표 연결됨" : "연결 확인 필요";
+    if (dashNotice) dashNotice.textContent = data.source === "kric-timetable" ? "아산역 → 신창역 다음 열차" : (data.notice || "KRIC API 설정을 확인하세요.");
+  } catch (error) {
+    list.innerHTML = `<article class="train-card"><div class="dir">안내</div><h3>시간표를 불러오지 못했습니다.</h3><p>${error.message || "잠시 후 다시 시도해주세요."}</p></article>`;
+    notice.textContent = "KRIC 인증키와 Render 환경변수 설정을 확인해주세요.";
+  } finally { if (refreshButton) refreshButton.disabled = false; }
 }
 document.getElementById("refreshSubway").addEventListener("click", loadSubway);
 loadSubway();
